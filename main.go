@@ -7,18 +7,19 @@ import (
 	//"io"
 
 	// "github.com/joho/godotenv"
-	"github.com/gin-gonic/gin"
-	"github.com/Amha-k/go-Project/routes"
 	"github.com/Amha-k/go-Project/config"
+	"github.com/Amha-k/go-Project/middleware"
+	// "github.com/Amha-k/go-Project/models"
+	"github.com/Amha-k/go-Project/routes"
+	"github.com/gin-gonic/gin"
 )
-
 
 /////////// this is like a controller
 
 /*
 func getData(c *gin.Context) {
 		c.JSON(200, gin.H{
-	
+
 			"message": "Hello World",
 		})
 	}
@@ -43,11 +44,23 @@ func main() {
 	config.ConnectDB()
 
     router:=gin.Default()
+api:=router.Group("/api")
+routes.AuthRoutes(api)
+api.Use(middleware.AuthToken())
 
-	
-routes.UserRoutes(router)
+companyApi:=api.Group("/company/event")
+
+routes.CompanyRoutes(companyApi)
+userRoutes:=api.Group("/users")
+routes.UserRoute(userRoutes)
 
 router.Run()
+
+
+
+
+
+
 /*
 router.GET("/getData", getData)
     router.POST("/postData", postDataHandler)

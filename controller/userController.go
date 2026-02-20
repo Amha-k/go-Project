@@ -1,96 +1,115 @@
 package controller
 
 import (
-	"github.com/Amha-k/go-Project/models"
 	"net/http"
+	"strconv"
+
+	"github.com/Amha-k/go-Project/config"
+	"github.com/Amha-k/go-Project/models"
 	"github.com/gin-gonic/gin"
-//	"github.com/joho/godotenv"
-    "strconv"
+	//"gorm.io/gorm"
+	"github.com/Amha-k/go-Project/utils"
 )
-func GetUsers(c * gin.Context){
-	c.JSON(http.StatusOK,gin.H{
-		"users": models.Users,
-	})
-}
 
+/*
 
-func CreateUser(c *gin.Context){
-var newUser models.User
+func ListAllEvents(c *gin.Context) {
+    var events []models.Event
 
-if err :=c.ShouldBind(&newUser); err !=nil{
-	c.JSON(http.StatusBadRequest, gin.H{
-		"error": err.Error(),
-	})
-return 
-}
-newUser.Id = models.NextID
-models.NextID++
+    config.Db.
+        Preload("Company", func(db *gorm.DB) *gorm.DB {
+            return db.Select("id","name")
+        }).
+        Find(&events)
 
-models.Users = append(models.Users, newUser)
-
-c.JSON(http.StatusCreated, gin.H{
-	"message": "user created successfully",
-})
-
-}
-
-
-func GetByID(c *gin.Context){
-id , _ := strconv.Atoi(c.Param("id"))
-
-for _ ,user:= range models.Users{
-	if user.Id == id{
-		c.JSON(http.StatusOK, gin.H{
-			"user": user,
+    var response []utils.EventResponse
+        for _, event := range events {
+		response = append( response, utils.EventResponse{
+			ID:           event.ID,
+			Name:         event.Name,
+			Description:  event.Description,
+			Price:        event.Price,
+			CompanyID:    event.CompanyID,
+			CompanyName:  event.Company.Name,
+			EventDate:    event.EventDate,
+			TicketNumber: event.TicketNumber,
 		})
-		return 
 	}
-}
-
-c.JSON(http.StatusNotFound, gin.H{
-	"message": "user not found",
-})
+    c.JSON(http.StatusOK, events)
+	utils.JSONSuccess(c,events,"avilable events")
 }
 
 
-func DeleteUser(c *gin.Context){
-	id ,_:=strconv.Atoi(c.Param("id"))
+*/
+func ListAllEvents(c *gin.Context) {
+	var events []utils.EventResponse
 
-	for i,user:=range models.Users{
-		if user.Id == id{
-			models.Users=append(models.Users[:i],models.Users[i+1:]...)
-			c.JSON(http.StatusOK, gin.H{
-				"message":"user deleted successfully",
-			})
-			return
-		}
+	err := config.Db.
+		Model(&models.Event{}).
+		Select(`
+			events.id,
+			events.name,
+			events.description,
+			events.price,
+			events.event_date,
+			events.ticket_number,
+			events.company_id,
+			companies.name as company_name
+		`).
+		Joins("LEFT JOIN companies ON companies.id = events.company_id").
+		Scan(&events).Error
+
+	if err != nil {
+		utils.JSONError(c, "DB_ERROR", "Failed to fetch events", 500, err.Error())
+		return
 	}
-   c.JSON(http.StatusNotFound, gin.H{
-	"message": "no user with this id",
-   }) 
+
+	utils.JSONSuccess(c, events, "Events fetched successfully")
 }
 
 
-func UpdateUser(c *gin.Context){
-	id,_:= strconv.Atoi(c.Param("id"))
 
-	var updatedUser models.User
 
-	if err:= c.ShouldBindJSON(&updatedUser); err !=nil{
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return 
-	}
 
-	for i, user:= range models.Users{
-		if user.Id == id{
-			models.Users[i].Name= updatedUser.Name
-			models.Users[i].Email= updatedUser.Email
 
-			c.JSON(http.StatusOK, gin.H{
-				"message": "user updated successfully",
-			})
-		}
-	}
+
+func BuyTicket(c *gin.Context) {
+    if c.GetString("entity") != "user" {
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only users allowed")
+        return
+    }
+
+    userID := c.GetUint("id")
+    eventID,_:= strconv.Atoi(c.Param("id"))
+    
+
+    var event models.Event
+    if err := config.Db.First(&event, eventID).Error; err != nil {
+        c.JSON(404, gin.H{"error": "Event not found"})
+        return
+    }
+
+    ticket := models.Ticket{
+        UserID:  userID,
+        EventID: uint(eventID),
+        Price:   event.Price,
+    }
+
+    config.Db.Create(&ticket)
+    event.TicketNumber=event.TicketNumber-1
+    config.Db.Save(&event)
+   utils.JSONSuccess(c,ticket,"Ticket purchesd")
+}
+
+func ListMyTickets(c *gin.Context) {
+    if c.GetString("entity") != "user" {
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        return
+    }
+
+    userID := c.GetUint("id")
+    var tickets []models.Ticket
+    config.Db.Preload("Event").Where("user_id = ?", userID).Find(&tickets)
+
+    utils.JSONSuccess(c,tickets,"avilable tickets")
 }
