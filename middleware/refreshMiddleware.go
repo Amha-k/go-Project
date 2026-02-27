@@ -2,7 +2,6 @@ package middleware
 
 import(
 
-	// "os"
 	"time"
 	"strings"
 
@@ -45,14 +44,14 @@ func tryRefresh(c *gin.Context) bool {
         id = rt.CompanyID
     }
 
-    // generate new access token
+   
     newAccess, _ := utils.GenerateToken(id, entity)
     c.Header("X-New-Access-Token", newAccess)
 
     c.Set("id", id)
     c.Set("entity", entity)
 
-    // request continues
+   
     c.Next()
     return true
 }

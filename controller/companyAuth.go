@@ -12,7 +12,7 @@ import (
 )
 // @Summary Register a new company
 // @Description Create a company account
-// @Tags users
+// @Tags company
 // @Accept json
 // @Produce json
 // @Param company body models.UserRegisterRequest true "company registration info"

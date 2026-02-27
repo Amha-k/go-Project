@@ -1,14 +1,14 @@
 package middleware
 
 import(
-//	"net/http"
+    "net/http"
 	"os"
-//	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	//"github.com/Amha-k/go-Project/utils"
+    "github.com/Amha-k/go-Project/utils"
+
 )
 
 func AuthToken() gin.HandlerFunc {
@@ -42,11 +42,13 @@ func AuthToken() gin.HandlerFunc {
 
        
       if tryRefresh(c) {
-          return // refresh successful → new token issued, request continues
+          return 
       }
 	
 
        
-        c.AbortWithStatusJSON(401, gin.H{"error": "invalid or expired token"})
+        c.Abort()
+        	utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        
     }
 }

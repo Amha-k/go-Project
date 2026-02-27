@@ -5,10 +5,8 @@ import (
 	"github.com/Amha-k/go-Project/models"
 	"net/http"
 	"github.com/gin-gonic/gin"
-//	"github.com/joho/godotenv"
     "strconv"
 	"github.com/Amha-k/go-Project/utils"
-	"time"
 	"gorm.io/gorm"
 )
 
@@ -33,15 +31,8 @@ func CreateEvent(c *gin.Context) {
     }
 
     companyID := c.GetUint("id")
-
-    var input struct {
-        Name         string    `json:"name"`
-        Description  string    `json:"description"`
-        Price        float64   `json:"price"`
-        EventDate    time.Time `json:"eventdate"`
-        TicketNumber uint      `json:"ticketNumber"`
-  
-    }
+var input models.CreateEventRequest
+   
 
     if err := c.BindJSON(&input); err != nil {
 		utils.JSONError(c, "Fill Error", "Fill all fileds",http.StatusBadRequest , err.Error())
@@ -160,14 +151,7 @@ func UpdateEvent(c *gin.Context) {
         return
     }
 
-    var input struct {
-        Name         string    `json:"name"`
-        Description  string    `json:"description"`
-        Price        float64   `json:"price"`
-        EventDate    time.Time `json:"eventdate"`
-        TicketNumber uint      `json:"ticketNumber"`
-  
-    }
+    var input models.UpdateEventRequest
 
     c.BindJSON(&input)
 
@@ -223,7 +207,7 @@ func DeleteEvent(c *gin.Context) {
 
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /*

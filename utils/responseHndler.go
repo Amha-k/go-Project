@@ -17,8 +17,7 @@ type SuccessResponse struct {
 	Timestamp string      `json:"timestamp"`
 	RequestID string      `json:"request_id,omitempty"`
 }
-// ErrorResponse represents a failed API response
-// @Description Standard success response
+
 type ErrorResponse struct {
 	Success   bool        `json:"success"`
 	Status    int         `json:"status"`
@@ -33,6 +32,7 @@ type ErrorDetail struct {
 	Details interface{} `json:"details,omitempty"`
 }
 
+// @Description Standard success response
 func JSONSuccess(c *gin.Context, data interface{}, message string) {
 	c.JSON(http.StatusOK, SuccessResponse{
 		Success:   true,

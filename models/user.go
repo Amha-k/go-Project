@@ -13,7 +13,8 @@ type User struct{
 	Name string   `gorm:"not null"`
 	Email string  `gorm:"unique;not null"`
 	Password string `gorm:"not null"`
-	
+	MFASecret string
+	MFAEnabled bool
 	Tickets []Ticket    `gorm:"foreignKey:UserID"`
 
 	/// Id int       `json:"id"`      // this is not needed to the database

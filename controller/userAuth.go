@@ -1,7 +1,3 @@
-
-
-
-
 package controller
 
 import (
@@ -13,6 +9,7 @@ import (
 	"github.com/Amha-k/go-Project/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/pquerna/otp/totp"
 )
 
 
@@ -114,6 +111,30 @@ tokenID, secret, hash, _ := utils.GenerateRefreshPair()
 
 	config.Db.Create(&rt)
 
+
+
+	if user.MFAEnabled{
+		key, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      "eventx",
+		AccountName: user.Email,
+	})
+
+	if err != nil {
+		utils.JSONError(c, "MFA", "Failed to generate key", http.StatusInternalServerError, err.Error())
+		return
+	}
+user.MFASecret = key.Secret()
+	config.Db.Save(&user)
+
+tempToken,err :=utils.GenerateTempToken(user.ID)
+
+	utils.JSONSuccess(c, gin.H{
+		"secret": key.Secret(),
+		"qr_url": key.URL(),
+        "tep_token": tempToken,
+	}, "Scan QR with Authenticator app")
+		return 
+	}
 	cookieValue := tokenID + "." + secret
 
 	c.SetCookie("refresh_token", cookieValue, 7*24*3600, "/", "", true, true)

@@ -7,41 +7,8 @@ import (
 	"github.com/Amha-k/go-Project/config"
 	"github.com/Amha-k/go-Project/models"
 	"github.com/gin-gonic/gin"
-	//"gorm.io/gorm"
 	"github.com/Amha-k/go-Project/utils"
 )
-
-/*
-
-func ListAllEvents(c *gin.Context) {
-    var events []models.Event
-
-    config.Db.
-        Preload("Company", func(db *gorm.DB) *gorm.DB {
-            return db.Select("id","name")
-        }).
-        Find(&events)
-
-    var response []utils.EventResponse
-        for _, event := range events {
-		response = append( response, utils.EventResponse{
-			ID:           event.ID,
-			Name:         event.Name,
-			Description:  event.Description,
-			Price:        event.Price,
-			CompanyID:    event.CompanyID,
-			CompanyName:  event.Company.Name,
-			EventDate:    event.EventDate,
-			TicketNumber: event.TicketNumber,
-		})
-	}
-    c.JSON(http.StatusOK, events)
-	utils.JSONSuccess(c,events,"avilable events")
-}
-
-
-*/
-
 
 // @Summary List all available events
 // @Description Get all events with company name (Users only)
@@ -221,3 +188,48 @@ func SearchEvents(c *gin.Context) {
 
     utils.JSONSuccess(c,events,"available events")
 }
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////
+
+/*
+
+func ListAllEvents(c *gin.Context) {
+    var events []models.Event
+
+    config.Db.
+        Preload("Company", func(db *gorm.DB) *gorm.DB {
+            return db.Select("id","name")
+        }).
+        Find(&events)
+
+    var response []utils.EventResponse
+        for _, event := range events {
+		response = append( response, utils.EventResponse{
+			ID:           event.ID,
+			Name:         event.Name,
+			Description:  event.Description,
+			Price:        event.Price,
+			CompanyID:    event.CompanyID,
+			CompanyName:  event.Company.Name,
+			EventDate:    event.EventDate,
+			TicketNumber: event.TicketNumber,
+		})
+	}
+    c.JSON(http.StatusOK, events)
+	utils.JSONSuccess(c,events,"avilable events")
+}
+
+
+*/
+

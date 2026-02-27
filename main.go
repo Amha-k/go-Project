@@ -42,29 +42,7 @@ import (
     tollbooth_gin "github.com/didip/tollbooth_gin"
 )
 
-/////////// this is like a controller
 
-/*
-func getData(c *gin.Context) {
-		c.JSON(200, gin.H{
-
-			"message": "Hello World",
-		})
-	}
-func postDataHandler(c *gin.Context) {
-		var jsonData map[string]interface{}
-		if err := c.ShouldBindJSON(&jsonData); err != nil {
-			c.JSON(400, gin.H{"error": "Invalid JSON"})
-			return
-		}
-	c.JSON(200,gin.H{
-		"message": "Data recived",
-		"data": jsonData,
-
-	})
-	}
-
-*/
 
 func main() {
 
@@ -96,6 +74,18 @@ router.Run()
 
 
 
+}
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -128,4 +118,26 @@ func postDataHandler(c *gin.Context){
 	fmt.Printf("Server is running on port %s", port)
 
 	*/
-}
+	/////////// this is like a controller
+
+/*
+func getData(c *gin.Context) {
+		c.JSON(200, gin.H{
+
+			"message": "Hello World",
+		})
+	}
+func postDataHandler(c *gin.Context) {
+		var jsonData map[string]interface{}
+		if err := c.ShouldBindJSON(&jsonData); err != nil {
+			c.JSON(400, gin.H{"error": "Invalid JSON"})
+			return
+		}
+	c.JSON(200,gin.H{
+		"message": "Data recived",
+		"data": jsonData,
+
+	})
+	}
+
+*/

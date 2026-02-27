@@ -11,5 +11,5 @@ type Company struct{
 	Email string `gorm:"unique;not null"`
 	Password string `gorm:"not null"`
 
-	Events []Event // `gorm:"foreignKey:CompanyID"`
+	Events []Event 
 }

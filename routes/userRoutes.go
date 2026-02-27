@@ -12,5 +12,7 @@ func UserRoute(router *gin.RouterGroup){
     router.GET("/tickets", controller.ListMyTickets) 
     router.POST("/logout",controller.Logout)    
     router.GET("/search",controller.SearchEvents)
+    router.GET("/MFAoption",controller.EnableMFA)
+
 }
 

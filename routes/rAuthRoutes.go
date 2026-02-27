@@ -10,7 +10,7 @@ func AuthRoutes(router *gin.RouterGroup){
 	router.POST("/company/register",controller.CompanyRegister)
 	router.POST("/users/login",controller.UserLogin)
 	router.POST("/company/login",controller.CompanyLogin)
-	
+	router.POST("/verify-mfa",controller.VerifyMFA)
 }
 
 
