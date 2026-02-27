@@ -8,8 +8,17 @@ import (
 	"github.com/Amha-k/go-Project/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
-
+// @Summary Register a new company
+// @Description Create a company account
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param company body models.UserRegisterRequest true "company registration info"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /company/register [post]
 func CompanyRegister(c *gin.Context) {
 	var RegisterInput struct {
 		Name     string `json:name`
@@ -39,13 +48,33 @@ func CompanyRegister(c *gin.Context) {
 		
 	}
 	token, _ := utils.GenerateToken(company.ID, "company")
+	tokenID, secret, hash, _ := utils.GenerateRefreshPair()
 
-	
-	utils.JSONSuccess(c,token,"company succesfuly registerd")
+	rt := models.RefreshToken{
+		TokenID:   tokenID,
+		TokenHash: hash,
+		CompanyID:    company.ID,
+		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
+	}
 
+	config.Db.Create(&rt)
+
+	cookieValue := tokenID + "." + secret
+
+	c.SetCookie("refresh_token", cookieValue, 7*24*3600, "/", "", true, true)
+
+	 utils.JSONSuccess(c,token,"company succesfuly registerd")
 }
 
-
+// @Summary  login company
+// @Description login company account
+// @Tags company
+// @Accept json
+// @Produce json
+// @Param company body models.UserRegisterRequest true "company login info"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /company/login [post]
 func CompanyLogin(c *gin.Context) {
 	var loginInput struct {
 		Email    string `json:"email"`
@@ -70,7 +99,21 @@ func CompanyLogin(c *gin.Context) {
 		return
 	}
 	token, _ := utils.GenerateToken(company.ID, "company")
+tokenID, secret, hash, _ := utils.GenerateRefreshPair()
 
-	utils.JSONSuccess(c,token,"company succesfuly logedin")
+	rt := models.RefreshToken{
+		TokenID:   tokenID,
+		TokenHash: hash,
+		CompanyID:    company.ID,
+		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	config.Db.Create(&rt)
+
+	cookieValue := tokenID + "." + secret
+
+	c.SetCookie("refresh_token", cookieValue, 7*24*3600, "/", "", true, true)
+
+utils.JSONSuccess(c,token,"company succesfuly logedin")
 
 }

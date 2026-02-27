@@ -14,7 +14,17 @@ import (
 
 
 
-
+// @Summary Create new event
+// @Description Company creates a new event
+// @Tags Events
+// @Accept json
+// @Produce json
+// @Param event body models.CreateEventRequest true "Event data"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 403 {object} utils.ErrorResponse
+// @Router /company/event [post]
+// @Security BearerAuth
 func CreateEvent(c *gin.Context) {
     if c.GetString("entity") != "company" {
         
@@ -94,7 +104,14 @@ utils.JSONSuccess(c, resp, "Event created")
 
 
 
-
+// @Summary Get company events
+// @Description Returns all events created by the logged-in company
+// @Tags Events
+// @Produce json
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 403 {object} utils.ErrorResponse
+// @Router /company/event [get]
+// @Security BearerAuth
 func GetMyEvents(c *gin.Context) {
     if c.GetString("entity") != "company" {
         utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
@@ -111,6 +128,18 @@ func GetMyEvents(c *gin.Context) {
 
 
 
+// @Summary Update event
+// @Description Company updates its own event
+// @Tags Events
+// @Accept json
+// @Produce json
+// @Param id path int true "Event ID"
+// @Param event body models.UpdateEventRequest true "Updated event data"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Router /company/event/{id} [put]
+// @Security BearerAuth
 func UpdateEvent(c *gin.Context) {
     if c.GetString("entity") != "company" {
        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
@@ -152,6 +181,18 @@ func UpdateEvent(c *gin.Context) {
    utils.JSONSuccess(c,event,"event updated")
 }
 
+
+
+
+// @Summary Delete event
+// @Description Company deletes its own event
+// @Tags Events
+// @Produce json
+// @Param id path int true "Event ID"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Router /company/event/{id} [delete]
+// @Security BearerAuth
 func DeleteEvent(c *gin.Context) {
     if c.GetString("entity") != "company" {
         utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")

@@ -1,55 +1,52 @@
 package middleware
 
 import(
-	"net/http"
+//	"net/http"
 	"os"
-	"fmt"
+//	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/Amha-k/go-Project/utils"
+	//"github.com/Amha-k/go-Project/utils"
 )
 
+func AuthToken() gin.HandlerFunc {
+    return func(c *gin.Context) {
 
-func AuthToken() gin.HandlerFunc{
-	return  func(c *gin.Context){
-		authHeader := c.GetHeader("Authorization")
-		parts := strings.Split(authHeader, " ")
-        tokenString := parts[1]
-		if tokenString==""{
-			utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "cant acces this ")
-    
-			c.Abort()
-			return 
-		}
+        authHeader := c.GetHeader("Authorization")
 
-		token ,err := jwt.Parse(tokenString,func(token *jwt.Token)(interface{},error){
-			 if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-                return nil, fmt.Errorf("unexpected signing method")
+        var tokenValid bool
+
+        if authHeader != "" {
+            parts := strings.Split(authHeader, " ")
+            if len(parts) == 2 && parts[0] == "Bearer" {
+                tokenString := parts[1]
+                token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+                    return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+                })
+
+                if err == nil && token.Valid {
+                    claims := token.Claims.(jwt.MapClaims)
+                    c.Set("id", uint(claims["id"].(float64)))
+                    c.Set("entity", claims["entity"].(string))
+                    tokenValid = true
+                }
             }
-			return []byte(os.Getenv("JWT_SECRET_KEY")),nil
-		})
+        }
 
-		if err!=nil  {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "cant acces this ")
-    
-			
-			c.Abort()
-			return 
-	}
-	if !token.Valid {
-       utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "cant acces this ")
-    
-			
-			c.Abort()
-			return 
-	}
+        if tokenValid {
+            c.Next()
+            return
+        }
 
-	claims:= token.Claims.(jwt.MapClaims)
-	c.Set("id",uint(claims["id"].(float64)))
-	c.Set("entity",claims["entity"].(string))
+       
+      if tryRefresh(c) {
+          return // refresh successful → new token issued, request continues
+      }
+	
 
-	c.Next()
-}
+       
+        c.AbortWithStatusJSON(401, gin.H{"error": "invalid or expired token"})
+    }
 }

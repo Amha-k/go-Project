@@ -21,7 +21,7 @@ func GenerateToken(id uint , entity string) (string ,error){
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,jwt.MapClaims{
 		"id":id,
 		"entity":entity,
-		"expires":time.Now().Add(24*time.Hour).Unix(),
+		"exp":time.Now().Add(1*time.Minute).Unix(),
 	})
 
 

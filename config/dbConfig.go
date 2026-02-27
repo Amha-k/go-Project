@@ -72,7 +72,7 @@ if err!=nil{
 	log.Fatal("filed to connect database")
 }
 
-database.AutoMigrate(&models.User{},&models.Company{},&models.Event{},&models.Ticket{})
+database.AutoMigrate(&models.User{},&models.Company{},&models.Event{},&models.Ticket{},&models.RefreshToken{})
 
 Db=database
 

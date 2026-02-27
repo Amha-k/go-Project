@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+// SuccessResponse represents a successful API response
 
 type SuccessResponse struct {
 	Success   bool        `json:"success"`
@@ -16,7 +17,8 @@ type SuccessResponse struct {
 	Timestamp string      `json:"timestamp"`
 	RequestID string      `json:"request_id,omitempty"`
 }
-
+// ErrorResponse represents a failed API response
+// @Description Standard success response
 type ErrorResponse struct {
 	Success   bool        `json:"success"`
 	Status    int         `json:"status"`
@@ -40,7 +42,7 @@ func JSONSuccess(c *gin.Context, data interface{}, message string) {
 		Timestamp: time.Now().Format(time.RFC3339),
 	})
 }
-
+// @Description Standard error response
 func JSONError(c *gin.Context, code string, message string, status int, details interface{}) {
 	c.JSON(status, ErrorResponse{
 		Success:   false,

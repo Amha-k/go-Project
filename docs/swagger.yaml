@@ -1,0 +1,404 @@
+basePath: /api
+definitions:
+  models.CreateEventRequest:
+    properties:
+      description:
+        type: string
+      eventdate:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      ticketNumber:
+        type: integer
+    required:
+    - description
+    - eventdate
+    - name
+    - price
+    - ticketNumber
+    type: object
+  models.UpdateEventRequest:
+    properties:
+      description:
+        type: string
+      eventdate:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      ticketNumber:
+        type: integer
+    type: object
+  models.UserLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.UserRegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  utils.ErrorDetail:
+    properties:
+      code:
+        type: string
+      details: {}
+      message:
+        type: string
+    type: object
+  utils.ErrorResponse:
+    description: Standard success response
+    properties:
+      error:
+        $ref: '#/definitions/utils.ErrorDetail'
+      request_id:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
+      timestamp:
+        type: string
+    type: object
+  utils.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      request_id:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
+      timestamp:
+        type: string
+    type: object
+host: localhost:5000
+info:
+  contact:
+    email: amhakifle09@gmail.com.com
+    name: amha
+  description: event posting webapp
+  termsOfService: http://example.com/terms/
+  title: Go Project
+  version: "1.0"
+paths:
+  /company/event:
+    get:
+      description: Returns all events created by the logged-in company
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get company events
+      tags:
+      - Events
+    post:
+      consumes:
+      - application/json
+      description: Company creates a new event
+      parameters:
+      - description: Event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateEventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new event
+      tags:
+      - Events
+  /company/event/{id}:
+    delete:
+      description: Company deletes its own event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete event
+      tags:
+      - Events
+    put:
+      consumes:
+      - application/json
+      description: Company updates its own event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateEventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update event
+      tags:
+      - Events
+  /company/login:
+    post:
+      consumes:
+      - application/json
+      description: login company account
+      parameters:
+      - description: company login info
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: login company
+      tags:
+      - company
+  /company/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a user account
+      parameters:
+      - description: company registration info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - user
+  /users/events:
+    get:
+      description: Get all events with company name (Users only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all available events
+      tags:
+      - Users
+  /users/events/{id}/buy:
+    post:
+      description: Purchase a ticket (Max 6 per user)
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buy ticket for an event
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login and get access token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Login as a user
+      tags:
+      - user
+  /users/search:
+    get:
+      description: Search events by name, date, min price, max price
+      parameters:
+      - description: Event name
+        in: query
+        name: name
+        type: string
+      - description: Event Date (YYYY-MM-DD)
+        in: query
+        name: eventDate
+        type: string
+      - description: Minimum Price
+        in: query
+        name: minPrice
+        type: number
+      - description: Maximum Price
+        in: query
+        name: maxPrice
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Search events
+      tags:
+      - Users
+  /users/tickets:
+    get:
+      description: Get all tickets for logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: List my purchased tickets
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

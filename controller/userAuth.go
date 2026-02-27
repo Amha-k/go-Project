@@ -1,7 +1,12 @@
+
+
+
+
 package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/Amha-k/go-Project/models"
 	"github.com/Amha-k/go-Project/config"
@@ -11,14 +16,18 @@ import (
 )
 
 
-
+// @Summary Register a new user
+// @Description Create a user account
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user body models.UserRegisterRequest true "company registration info"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /company/register [post]
 func UserRegister(c *gin.Context){
-var RegisterInput struct{
-	  Name string   `json:name`
-      Email string  `json:"email" binding:"required,email"`
-	  Password string  `json:"password" binding:"required,min=8"`
 
-	}
+var RegisterInput models.UserRegisterRequest
   if err:=c.ShouldBindJSON(&RegisterInput); err!=nil{
 	utils.JSONError(c, "File Error", "Fill all fileds",http.StatusBadRequest , err.Error())
 		return
@@ -41,6 +50,20 @@ if err := config.Db.Create(&user).Error; err!=nil{
 
 }
 token ,_:= utils.GenerateToken(user.ID,"user")
+tokenID, secret, hash, _ := utils.GenerateRefreshPair()
+
+	rt := models.RefreshToken{
+		TokenID:   tokenID,
+		TokenHash: hash,
+		UserID:    user.ID,
+		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	config.Db.Create(&rt)
+
+	cookieValue := tokenID + "." + secret
+
+	c.SetCookie("refresh_token", cookieValue, 7*24*3600, "/", "", true, true)
 
 utils.JSONSuccess(c,token,"company succesfuly registerd")
 
@@ -48,6 +71,15 @@ utils.JSONSuccess(c,token,"company succesfuly registerd")
 
 
 
+// @Summary Login as a user
+// @Description Login and get access token
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user body models.UserLoginRequest true "Login credentials"
+// @Success 200 {object} utils.SuccessResponse
+// @Failure 401 {object} utils.ErrorResponse
+// @Router /users/login [post]
 func UserLogin(c *gin.Context){
 	var loginInput struct{
 		Email string   `json:"email"`
@@ -71,8 +103,22 @@ utils.JSONError(c, "Authorization", "invalid email or password",http.StatusUnaut
 		return
 }
 token , _:= utils.GenerateToken(user.ID,"user")
+tokenID, secret, hash, _ := utils.GenerateRefreshPair()
 
-utils.JSONSuccess(c,token,"company succesfuly logedin")
+	rt := models.RefreshToken{
+		TokenID:   tokenID,
+		TokenHash: hash,
+		UserID:    user.ID,
+		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	config.Db.Create(&rt)
+
+	cookieValue := tokenID + "." + secret
+
+	c.SetCookie("refresh_token", cookieValue, 7*24*3600, "/", "", true, true)
+
+ utils.JSONSuccess(c,token,"company succesfuly logedin")
 
 
 }

@@ -17,5 +17,4 @@ type Event struct{
 	EventDate   time.Time `json:"eventdate" gorm:"not null"` 
 	TicketNumber uint
 	Tickets []Ticket `gorm:"foreignKey:EventID"`
-
 }

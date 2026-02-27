@@ -1,3 +1,23 @@
+// @title Go Project
+// @version 1.0
+// @description event posting webapp
+// @termsOfService http://example.com/terms/
+
+// @contact.name amha
+// @contact.email amhakifle09@gmail.com.com
+
+// @host localhost:5000
+// @BasePath /api
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
+
+
+
+
+
 package main
 
 import (
@@ -6,12 +26,20 @@ import (
 	//"os"
 	//"io"
 
+ ginSwagger "github.com/swaggo/gin-swagger"
+    swaggerFiles "github.com/swaggo/files"
+    _ "github.com/Amha-k/go-Project/docs" 
+
+
+
 	// "github.com/joho/godotenv"
 	"github.com/Amha-k/go-Project/config"
 	"github.com/Amha-k/go-Project/middleware"
 	// "github.com/Amha-k/go-Project/models"
 	"github.com/Amha-k/go-Project/routes"
 	"github.com/gin-gonic/gin"
+	"github.com/didip/tollbooth/v7"
+    tollbooth_gin "github.com/didip/tollbooth_gin"
 )
 
 /////////// this is like a controller
@@ -45,10 +73,20 @@ func main() {
 
     router:=gin.Default()
 api:=router.Group("/api")
+limiter := tollbooth.NewLimiter(5, nil)
+router.Use(tollbooth_gin.LimitHandler(limiter))
+
+
+router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 routes.AuthRoutes(api)
 api.Use(middleware.AuthToken())
 
-companyApi:=api.Group("/company/event")
+
+
+
+
+companyApi:=api.Group("/company")
 
 routes.CompanyRoutes(companyApi)
 userRoutes:=api.Group("/users")

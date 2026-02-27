@@ -6,10 +6,11 @@ import(
 )
 
 func CompanyRoutes(router *gin.RouterGroup){
-	router.GET("",controller.GetMyEvents)
-	router.POST("",controller.CreateEvent)
-	router.DELETE("/:id",controller.DeleteEvent)
-	router.PATCH("/:id",controller.UpdateEvent)
+	router.GET("/event",controller.GetMyEvents)
+	router.POST("/event",controller.CreateEvent)
+	router.DELETE("/event/:id",controller.DeleteEvent)
+	router.PATCH("/event/:id",controller.UpdateEvent)
+	router.POST("/logout",controller.Logout)
 }
 
 
