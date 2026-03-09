@@ -1,27 +1,50 @@
 
 package middleware
 
-import (
-	"errors"
-	"github.com/golang-jwt/jwt/v5"
+import(
+    "net/http"
 	"os"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+    "github.com/Amha-k/go-Project/utils"
+
 )
 
-func ValidateTempToken(tokenStr string) (uint, error) {
+func ValidateTempToken() gin.HandlerFunc {
+    return func(c *gin.Context) {
 
-    token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-        return os.Getenv("JWT_SECRET_KEY"), nil
-    })
+        authHeader := c.GetHeader("Authorization")
 
-    if err != nil || !token.Valid {
-        return 0, err
+        var tokenValid bool
+
+        if authHeader != "" {
+            parts := strings.Split(authHeader, " ")
+            if len(parts) == 2 && parts[0] == "Bearer" {
+                tokenString := parts[1]
+                token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+                    return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+                })
+
+                if err == nil && token.Valid {
+                    claims := token.Claims.(jwt.MapClaims)
+                    c.Set("id", uint(claims["id"].(float64)))
+                    tokenValid = true
+                }
+            }
+        }
+
+        if tokenValid {
+            c.Next()
+            return
+        }
+
+    
+
+       
+        c.Abort()
+        	utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "invalid token")
+        
     }
-
-    claims := token.Claims.(jwt.MapClaims)
-
-    if claims["type"] != "mfa_temp" {
-        return 0, errors.New("not temp token")
-    }
-
-    return uint(claims["user_id"].(float64)), nil
 }

@@ -8,15 +8,13 @@ import (
 	"github.com/Amha-k/go-Project/config"
 	"github.com/Amha-k/go-Project/models"
 	"github.com/gin-gonic/gin"
+
 	//"github.com/pquerna/otp"
-	"github.com/pquerna/otp/totp"
 	"github.com/Amha-k/go-Project/utils"
+	"github.com/pquerna/otp/totp"
 )
 
-
 func EnableMFA(c *gin.Context) {
-
-	
 
 	userID := c.GetUint("id")
 
@@ -32,7 +30,7 @@ func EnableMFA(c *gin.Context) {
 		utils.JSONError(c, "MFA", "Failed to generate key", http.StatusInternalServerError, err.Error())
 		return
 	}
-
+	user.MFAEnabled = true
 	user.MFASecret = key.Secret()
 	config.Db.Save(&user)
 

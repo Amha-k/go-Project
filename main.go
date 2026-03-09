@@ -40,12 +40,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/didip/tollbooth/v7"
     tollbooth_gin "github.com/didip/tollbooth_gin"
+	"github.com/Amha-k/go-Project/controller"
 )
 
 
 
 func main() {
-
+    
 	config.LoadEnv()
 	config.ConnectDB()
 
@@ -55,9 +56,11 @@ limiter := tollbooth.NewLimiter(5, nil)
 router.Use(tollbooth_gin.LimitHandler(limiter))
 
 
+
 router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 routes.AuthRoutes(api)
+api.POST("/verify-mfa",middleware.ValidateTempToken(),controller.VerifyMFA)
 api.Use(middleware.AuthToken())
 
 

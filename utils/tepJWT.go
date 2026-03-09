@@ -3,18 +3,29 @@ package utils
 import (
     "time"
     "github.com/golang-jwt/jwt/v5"
+    "errors"
+	"os"
+	
+
+	
 )
 
-var jwtKey = []byte("super-secret-key")
 
-func GenerateTempToken(userID uint) (string, error) {
 
-    claims := jwt.MapClaims{
-        "user_id": userID,
-        "type":    "mfa_temp",
-        "exp":     time.Now().Add(5 * time.Minute).Unix(),
-    }
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    return token.SignedString(jwtKey)
+func GenerateTempToken(id uint ) (string ,error){
+
+	secret:=[]byte(os.Getenv("JWT_SECRET_KEY"))
+
+	if len(secret)==0{
+		return "",errors.New("jtw secret not found")
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,jwt.MapClaims{
+		"id":id,
+		"exp":time.Now().Add(5*time.Minute).Unix(),
+	})
+
+
+return token.SignedString(secret)
 }

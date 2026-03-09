@@ -10,4 +10,6 @@ type Ticket struct{
 	Price float64 
 	EventID uint 
 	Event Event `gorm:"foreignKey:EventID;<-:false" json:"-"`
+	PaymentStatus string
+	PaymentRef string
 }

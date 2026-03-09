@@ -1,13 +1,20 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/Amha-k/go-Project/config"
 	"github.com/Amha-k/go-Project/models"
-	"github.com/gin-gonic/gin"
 	"github.com/Amha-k/go-Project/utils"
+	//"github.com/Chapa-Et/chapa-go"
+	"github.com/gin-gonic/gin"
+	//"github.com/shopspring/decimal"
 )
 
 // @Summary List all available events
@@ -66,7 +73,7 @@ if c.GetString("entity") != "user" {
 // @Security BearerAuth
 func BuyTicket(c *gin.Context) {
     if c.GetString("entity") != "user" {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "unAuthorized access")
         return
     }
 
@@ -87,33 +94,101 @@ func BuyTicket(c *gin.Context) {
 	return 
     }
 
-
+txref:=fmt.Sprintf("ticket-%d-%d",userID,time.Now().Unix())
     ticket := models.Ticket{
         UserID:  userID,
         EventID: uint(eventID),
         Price:   event.Price,
+        PaymentStatus: "pending",
+        PaymentRef: txref,
     }
+
+
    var totalTicket int64
-    config.Db.Model(&models.Ticket{}).Where("event_id=? AND user_id=?",eventID,userID).Count(&totalTicket)
+
+    config.Db.Model(&models.Ticket{}).Where("event_id=? AND user_id=? AND payment_status=?",eventID,userID,"paid").Count(&totalTicket)
   if totalTicket >=6 {
 	utils.JSONError(c,"BAD_REQUEST","cant buy more than 6 TICKETS", http.StatusBadRequest,nil)
 	return 
   }
-   
+
 	if event.TicketNumber<=0{
 		 utils.JSONError(c, "BAD_REQUEST", "there is no avillable ticket",http.StatusBadRequest , nil)
         return
 	}
-    go utils.SendEmail(
-    user.Email,
-    "Ticket Purchase Successful",
-    utils.TicketEmailTemplate(user.Name, event.Name, event.EventDate),
-)
-	 config.Db.Create(&ticket)
-    event.TicketNumber=event.TicketNumber-1
-    config.Db.Save(&event)
-   utils.JSONSuccess(c,ticket,"Ticket purchesd")
+   
+config.Db.Create(&ticket)
 
+amount := fmt.Sprintf("%.2f", event.Price)
+
+
+payload := map[string]interface{}{
+	"amount":       amount,
+	"currency":     "ETB",
+	"first_name":   user.Name,
+	"last_name":    "User",
+	"email":        user.Email,
+	"phone_number": "0909400194",
+	"tx_ref":       txref,
+	"callback_url": "http://localhost:5000/api/users/payment/verify/" + txref,
+	"return_url":   "http://localhost:5000/api/users/payment/verify/" + txref,
+
+	"customization": map[string]interface{}{
+		"title":       "eventx",
+		"description": "online payments",
+	},
+}
+
+
+
+jsonData, err := json.Marshal(payload)
+if err != nil {
+	utils.JSONError(c, "JSON_ERROR", "Failed to encode request", 500, err.Error())
+	return
+}
+
+req, err := http.NewRequest(
+	"POST",
+	"https://api.chapa.co/v1/transaction/initialize",
+	bytes.NewBuffer(jsonData),
+)
+if err != nil {
+	utils.JSONError(c, "REQUEST_ERROR", "Failed to create request", 500, err.Error())
+	return
+}
+
+req.Header.Set("Content-Type", "application/json")
+req.Header.Set("Authorization", "Bearer "+os.Getenv("CHAPA_SECRET"))
+
+client := &http.Client{}
+resp, err := client.Do(req)
+if err != nil {
+	utils.JSONError(c, "PAYMENT_ERROR", "Failed to initialize payment", 500, err.Error())
+	return
+}
+defer resp.Body.Close()
+
+var result map[string]interface{}
+json.NewDecoder(resp.Body).Decode(&result)
+
+fmt.Println("CHAPA RESPONSE:", result)
+
+
+if result["status"] != "success" {
+	utils.JSONError(c, "PAYMENT_FAILED", "Chapa rejected request", 400, result)
+	return
+}
+
+
+data := result["data"].(map[string]interface{})
+checkoutURL := data["checkout_url"].(string)
+
+
+
+utils.JSONSuccess(c, gin.H{
+	"checkout_url": checkoutURL,
+	"payment_ref":  txref,
+}, "Redirect to payment")
 }
 
 

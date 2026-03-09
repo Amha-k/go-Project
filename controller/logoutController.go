@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/Amha-k/go-Project/config"
 	"github.com/Amha-k/go-Project/models"
