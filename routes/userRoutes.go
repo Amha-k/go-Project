@@ -13,6 +13,7 @@ func UserRoute(router *gin.RouterGroup){
     router.POST("/logout",controller.Logout)    
     router.GET("/search",controller.SearchEvents)
     router.GET("/MFAoption",controller.EnableMFA)
-    router.GET("/payment/verify/:txref",controller.VerifyPayment)
+    // router.GET("/payment/verify/:txref",controller.VerifyPayment)
+    router.POST("/events1/:id/buy", controller.StripePayment) 
 
 }

@@ -58,9 +58,13 @@ router.Use(tollbooth_gin.LimitHandler(limiter))
 
 
 router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+router.POST("/stripe/webhook", controller.StripeWebhook)
 routes.AuthRoutes(api)
 api.POST("/verify-mfa",middleware.ValidateTempToken(),controller.VerifyMFA)
+api.GET("users/payment/verify/:txref",controller.VerifyPayment)
+api.GET("users/payment/stripe/success", controller.StripeSuccess)
+
+
 api.Use(middleware.AuthToken())
 
 

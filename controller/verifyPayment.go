@@ -14,7 +14,7 @@ import (
 
 func VerifyPayment(c *gin.Context) {
 	txref := c.Param("txref")
-	userID := c.GetUint("id")
+	userID := 12//c.GetUint("id") 
 	
 	url := "https://api.chapa.co/v1/transaction/verify/" + txref
 
@@ -45,6 +45,7 @@ utils.JSONError(c, "BAD_REQUEST", "ticket not found",http.StatusBadRequest , err
         return
 
 }
+
 eventID := ticket.EventID
 
 
@@ -74,5 +75,20 @@ utils.JSONSuccess(c,ticket,"Ticket purchased")
 
 }
 
+/*
+func ChapaSuccess(c *gin.Context) {
 
+	sessionID := c.Query("txrfef")
 
+	if sessionID == "" {
+		utils.JSONError(c, "chapa", "parse error", http.StatusBadRequest, nil)
+		return
+		
+	}
+
+	utils.JSONSuccess(c, gin.H{
+		"message":    "payment successful",
+		"session_id": sessionID,
+	},"success")
+}
+*/

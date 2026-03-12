@@ -73,7 +73,7 @@ if c.GetString("entity") != "user" {
 // @Security BearerAuth
 func BuyTicket(c *gin.Context) {
     if c.GetString("entity") != "user" {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "unAuthorized access")
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "must have user Authorization")
         return
     }
 
@@ -83,14 +83,14 @@ func BuyTicket(c *gin.Context) {
 
     var event models.Event
     if err := config.Db.First(&event, eventID).Error; err != nil {
-       utils.JSONError(c,"BAD_REQUEST","cant find a event", http.StatusNotFound,nil)
+       utils.JSONError(c,"BAD_REQUEST","cant find a event", http.StatusNotFound,err.Error())
 	return 
 
     }
   var user models.User
     if err := config.Db.First(&user, userID).Error; err != nil {
        
-        utils.JSONError(c,"BAD_REQUEST","cant find a user", http.StatusNotFound,nil)
+        utils.JSONError(c,"BAD_REQUEST","cant find a user", http.StatusNotFound,err.Error())
 	return 
     }
 
@@ -130,8 +130,8 @@ payload := map[string]interface{}{
 	"email":        user.Email,
 	"phone_number": "0909400194",
 	"tx_ref":       txref,
-	"callback_url": "http://localhost:5000/api/users/payment/verify/" + txref,
-	"return_url":   "http://localhost:5000/api/users/payment/verify/" + txref,
+	"callback_url": "https://prosecutable-nonlegislatively-ebony.ngrok-free.dev/api/users/payment/verify/" + txref,
+	"return_url":   "https://prosecutable-nonlegislatively-ebony.ngrok-free.dev/api/users/payment/verify/" + txref,
 
 	"customization": map[string]interface{}{
 		"title":       "eventx",
@@ -202,7 +202,7 @@ utils.JSONSuccess(c, gin.H{
 // // @Security BearerAuth
 func ListMyTickets(c *gin.Context) {
     if c.GetString("entity") != "user" {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 1")
         return
     }
 

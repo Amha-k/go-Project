@@ -45,10 +45,9 @@ func AuthToken() gin.HandlerFunc {
           return 
       }
 	
-
        
         c.Abort()
-        	utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        	utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 6")
         
     }
 }

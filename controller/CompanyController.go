@@ -26,7 +26,7 @@ import (
 func CreateEvent(c *gin.Context) {
     if c.GetString("entity") != "company" {
         
-		utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+		utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 5")
         return
     }
 
@@ -105,7 +105,7 @@ utils.JSONSuccess(c, resp, "Event created")
 // @Security BearerAuth
 func GetMyEvents(c *gin.Context) {
     if c.GetString("entity") != "company" {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 1")
         return
     }
 
@@ -133,7 +133,7 @@ func GetMyEvents(c *gin.Context) {
 // @Security BearerAuth
 func UpdateEvent(c *gin.Context) {
     if c.GetString("entity") != "company" {
-       utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+       utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 2")
         return
     }
 
@@ -179,7 +179,7 @@ func UpdateEvent(c *gin.Context) {
 // @Security BearerAuth
 func DeleteEvent(c *gin.Context) {
     if c.GetString("entity") != "company" {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 3")
         return
     }
 
@@ -193,7 +193,7 @@ func DeleteEvent(c *gin.Context) {
     }
 
     if event.CompanyID != companyID {
-        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed")
+        utils.JSONError(c, "Authorization", "access denied",http.StatusBadRequest , "only companys allowed 4")
         return
     }
 
