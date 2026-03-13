@@ -7,12 +7,12 @@ export default function HomePage() {
       <nav className="border-b border-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="text-2xl font-bold text-foreground">EventHub</div>
-          <div className="flex gap-4">
-            <Link href="/login" className="px-4 py-2 text-foreground hover:text-accent transition-colors">
-              Sign In
+          <div className="flex gap-2 sm:gap-4">
+            <Link href="/login" className="px-3 sm:px-4 py-2 text-foreground hover:text-accent transition-colors text-sm sm:text-base">
+              User Login
             </Link>
-            <Link href="/register" className="px-4 py-2 bg-accent text-white rounded-md hover:bg-opacity-90 transition-colors">
-              Get Started
+            <Link href="/company/login" className="px-3 sm:px-4 py-2 text-foreground hover:text-accent transition-colors text-sm sm:text-base">
+              Company Login
             </Link>
           </div>
         </div>
@@ -20,29 +20,65 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Discover & Book Amazing Events
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Find concerts, conferences, meetups, and more. Create your own events and reach thousands of attendees.
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+            Discover & Book Amazing Events
+          </h1>
+          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+            Find concerts, conferences, meetups, and more. Create your own events and reach thousands of attendees.
+          </p>
+        </div>
+
+        {/* Auth Section Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto mb-16">
+          {/* User Section */}
+          <div className="bg-secondary border border-muted rounded-lg p-8">
+            <h2 className="text-2xl font-bold text-foreground mb-4">For Attendees</h2>
+            <p className="text-muted-foreground mb-6">
+              Browse, discover, and book tickets for amazing events in your area.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-3">
               <Link
-                href="/register"
-                className="px-6 py-3 bg-accent text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+                href="/login"
+                className="w-full px-6 py-3 bg-accent text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium text-center"
               >
-                Browse Events
+                User Login
               </Link>
               <Link
-                href="/company/register"
-                className="px-6 py-3 border border-accent text-accent rounded-lg hover:bg-accent hover:text-white transition-colors font-medium"
+                href="/register"
+                className="w-full px-6 py-3 border border-accent text-accent rounded-lg hover:bg-accent hover:text-white transition-colors font-medium text-center"
               >
-                Start Organizing
+                Create Account
               </Link>
             </div>
           </div>
+
+          {/* Company Section */}
+          <div className="bg-secondary border border-muted rounded-lg p-8">
+            <h2 className="text-2xl font-bold text-foreground mb-4">For Organizers</h2>
+            <p className="text-muted-foreground mb-6">
+              Create events, manage sales, and engage with your audience.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/company/login"
+                className="w-full px-6 py-3 bg-accent text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium text-center"
+              >
+                Company Login
+              </Link>
+              <Link
+                href="/company/register"
+                className="w-full px-6 py-3 border border-accent text-accent rounded-lg hover:bg-accent hover:text-white transition-colors font-medium text-center"
+              >
+                Register Company
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Info Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
           <div className="bg-secondary rounded-lg h-96 flex items-center justify-center">
             <div className="text-center">
               <div className="text-6xl mb-4">🎉</div>
